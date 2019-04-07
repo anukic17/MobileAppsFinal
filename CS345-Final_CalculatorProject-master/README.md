@@ -26,7 +26,7 @@ There will also be a “history” display option that allows the user to view p
 4.	At least one animation:
 -	[ ] Sliding animations that are utilized when switching to different interfaces
 5.	At least one alert:
--	[ ] When adding formulas, an alert pops up to notify the user to enter the formula within a text-field.
+-	[x] When clicking on formula cell in tableView, an alert will pop up explaining how to implement the formula
 6.	You must obtain text input from the user via a text-field (which may be included in the alert):
 -	[ ] When adding formulas, an alert pops up to notify the user to enter the formula within a text-field.
 7.	You must save some part of the state of your app when the app is terminated and restore it the next time the app is launched:
