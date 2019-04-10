@@ -18,18 +18,20 @@ class HistoryMenuController: UIViewController {
     let menuHeader: UILabel = UILabel()
     let historyData: UILabel = UILabel()
 
-    let calculateManuController = CalculateMenuController()
+    var equationHistory: [String] = ["0 + 0 = 0"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        equationHistory = retrieveFromJsonFile()
+        
         //screen constants
         let screenSize: CGSize = UIScreen.main.bounds.size
         let centerX: CGFloat = screenSize.width / 2
         //let centerY: CGFloat = screenSize.height / 2
         
         //assign the first tenth of the screen's height to the menu
-        let menuHeaderSection: CGFloat = screenSize.height/10
+        let menuHeaderSection: CGFloat = screenSize.height/20
         
         //button constants
         let buttonHeight: CGFloat = screenSize.height/7
@@ -42,16 +44,18 @@ class HistoryMenuController: UIViewController {
         menuHeader.font = UIFont.systemFont(ofSize: 22)
         menuHeader.textColor = UIColor.black
         menuHeader.textAlignment = NSTextAlignment.center
-        menuHeader.frame = CGRect(x: centerX/2, y: menuHeaderSection/2, width: centerX, height: menuHeaderSection)
+        menuHeader.frame = CGRect(x: centerX/2, y: menuHeaderSection*1, width: centerX, height: menuHeaderSection)
         self.view.addSubview(menuHeader)
         
         //history data
-        print(calculateManuController.getHistoryResults())
-        historyData.text?.append(calculateManuController.getHistoryResults().first!)
-        historyData.font = UIFont.systemFont(ofSize: 14)
+        setData();
+        historyData.font = UIFont.systemFont(ofSize: 30)
         historyData.textColor = UIColor.black
-        historyData.textAlignment = NSTextAlignment.left
-        historyData.frame = CGRect(x: centerX/6, y: menuHeaderSection, width: centerX, height: menuHeaderSection*5)
+        historyData.textAlignment = NSTextAlignment.right
+        historyData.frame = CGRect(x: screenSize.width * 0.02, y: menuHeaderSection*2, width: screenSize.width * 0.96, height: menuHeaderSection*11)
+        //historyData.backgroundColor = UIColor.red
+        historyData.lineBreakMode = .byWordWrapping
+        historyData.numberOfLines = 10
         self.view.addSubview(historyData)
         
         //clear data label
@@ -81,13 +85,57 @@ class HistoryMenuController: UIViewController {
         self.view.backgroundColor = UIColor.lightGray
     }
     
+    func retrieveFromJsonFile() -> [String]{
+        // Get the url of equations.json in document directory
+        guard let documentsDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return [""]}
+        let fileUrl = documentsDirectoryUrl.appendingPathComponent("equations.json")
+        // Read data from equations.json file
+        do {
+            let data = try Data(contentsOf: fileUrl, options: [])
+            guard let equationHistory = try JSONSerialization.jsonObject(with: data, options: []) as? [String] else { return [""]}
+            return equationHistory
+        } catch {
+            print(error)
+        }
+        return [""]
+    }
+    
+    func clearDataFromJsonFile() {
+        // Get the url of equations.json in document directory
+        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let fileUrl = documentDirectoryUrl.appendingPathComponent("equations.json")
+        // Save it into file
+        do {
+            //clear it
+            equationHistory.removeAll()
+            let data = try JSONSerialization.data(withJSONObject: equationHistory, options: [])
+            try data.write(to: fileUrl, options: [])
+        } catch {
+            print(error)
+        }
+    }
+    
     @objc func openMainMenu(_ recognizer: UITapGestureRecognizer) {
         presentingViewController?.dismiss(animated: true, completion: {
             () -> Void in
         })
     }
     
+    @objc func setData() {
+        historyData.text = ""
+        for (_, element) in equationHistory.enumerated() {
+            if(element == ""){
+                continue
+            }
+            let tempString: String = historyData.text!
+            let appendString: String = "\(tempString)\n\(element)"
+            historyData.text = appendString
+        }
+    }
+    
     @objc func clearData(_ recognizer: UITapGestureRecognizer) {
+        clearDataFromJsonFile()
+        setData()
     }
     
     // Method to set up an external screen.

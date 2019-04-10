@@ -28,18 +28,18 @@ There will also be a “history” display option that allows the user to view p
 5.	At least one alert:
 -	[x] When clicking on formula cell in tableView, an alert will pop up explaining how to implement the formula
 6.	You must obtain text input from the user via a text-field (which may be included in the alert):
--	[ ] When adding formulas, an alert pops up to notify the user to enter the formula within a text-field.
+-	[X] When adding formulas, an alert pops up to notify the user to enter the formula within a text-field.
 7.	You must save some part of the state of your app when the app is terminated and restore it the next time the app is launched:
--	[ ] Previous calculation data will be saved
+-	[X] Previous calculation data will be saved
 -	[x] Common formulas will be saved
 8.	You must have at least one of the following views:
 -	[x] Table view
--	[ ] Scroll view
-      -	[ ] The formula interface will be pre-populated with enough formulas to allow a scroll view to work.
+-	[X] Scroll view
+      -	[X] The formula interface will be pre-populated with enough formulas to allow a scroll view to work.
 9.	You must have at least one of the following views:
--	[ ] Button
-      -	[ ] Used to navigate to different interfaces
-      -	[ ] Used to choose the numbers that are desired for input
+-	[X] Button
+      -	[X] Used to navigate to different interfaces
+      -	[X] Used to choose the numbers that are desired for input
 -	[ ] Slider
 -	[ ] Picker
 

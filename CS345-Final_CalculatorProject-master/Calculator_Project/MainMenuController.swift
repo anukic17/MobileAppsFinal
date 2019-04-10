@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class MainMenuController: UIViewController {
-    
+        
     let calculatorLabel: UILabel = UILabel()
     let calculateLabel: UILabel = UILabel()
     let historyLabel: UILabel = UILabel()
@@ -31,17 +31,21 @@ class MainMenuController: UIViewController {
         let buttonWidth: CGFloat = screenSize.width-10
         let buttonX: CGFloat = 5
         
+        //image ratio
+        let imgHeight = screenSize.height * 0.197
+        let imgWidth = screenSize.width * 0.4266
+        
         //calculator menu label
         calculatorLabel.text = "Calculator"
         calculatorLabel.textColor = UIColor.white
         calculatorLabel.font = UIFont.systemFont(ofSize: 70)
         calculatorLabel.textAlignment = NSTextAlignment.center
-        calculatorLabel.frame = CGRect(x: buttonX, y: buttonHeight*0+30, width: buttonWidth, height: buttonHeight)
+        calculatorLabel.frame = CGRect(x: buttonX, y: buttonHeight*0+30, width: buttonWidth, height: buttonHeight-50)
         self.view.addSubview(calculatorLabel)
         
         //calculator icon label
         menuImage = UIButton(type: UIButton.ButtonType.custom)
-        menuImage.frame = CGRect(x: centerX-80, y: buttonHeight*1-30, width: 160, height: 160)
+        menuImage.frame = CGRect(x: centerX-(imgWidth/2), y: buttonHeight*1-30, width: imgWidth, height: imgHeight)
         menuImage.setImage(UIImage(named: "icon-original"), for: UIControl.State.normal)
         menuImage.isEnabled = true
         menuImage.addTarget(self, action: #selector(MainMenuController.iconPressed), for: UIControl.Event.touchUpInside)
@@ -85,7 +89,6 @@ class MainMenuController: UIViewController {
         
         self.view.backgroundColor = UIColor.lightGray
         
-        
     }
     
     @objc func openCalculateMenu(_ recognizer: UITapGestureRecognizer) {
@@ -121,5 +124,4 @@ class MainMenuController: UIViewController {
         }
         
     }
-    
 }

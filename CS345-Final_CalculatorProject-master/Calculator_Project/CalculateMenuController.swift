@@ -27,14 +27,18 @@ class CalculateMenuController: UIViewController {
     let gestureAreaLabel: UILabel = UILabel()
     
     var isTypingNumber = false
-    var firstNumber: Int? = 0
-    var secondNumber = 0
-    var operation = ""
+    public var firstNumber: Int? = 0
+    public var secondNumber = 0
+    public var operation = ""
+    public var result = 0;
     
-    public var historyList = [String]()
-    
+    var equation: String = ""
+    var equationHistory: [String] = [""]
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        equationHistory = retrieveFromJsonFile()
         
         //screen constants
         let screenSize: CGSize = UIScreen.main.bounds.size
@@ -235,52 +239,52 @@ class CalculateMenuController: UIViewController {
     
     @objc func pushZero(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: zeroButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "0"
     }
     
     @objc func pushOne(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: oneButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "1"
     }
     
     @objc func pushTwo(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: twoButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "2"
     }
     
     @objc func pushThree(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: threeButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "3"
     }
     
     @objc func pushFour(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: fourButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "4"
     }
     
     @objc func pushFive(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: fiveButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "5"
     }
     
     @objc func pushSix(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: sixButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "6"
     }
     
     @objc func pushSeven(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: sevenButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "7"
     }
     
     @objc func pushEight(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: eightButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "8"
     }
     
     @objc func pushNine(_ recognizer: UITapGestureRecognizer) {
         numberTapped(sender: nineButton)
-        gestureAreaLabel.text = ""
+        gestureAreaLabel.text = "9"
     }
     
     @objc func add(_ recognizer: UITapGestureRecognizer) {
@@ -326,7 +330,7 @@ class CalculateMenuController: UIViewController {
     
     @IBAction func equalsTapped() {
         isTypingNumber = false
-        var result = 0
+        result = 0
         secondNumber = Int(calculatorDisplay.text!)!
         
         if operation == "+" {
@@ -334,14 +338,57 @@ class CalculateMenuController: UIViewController {
         } else if operation == "-" {
             result = firstNumber! - secondNumber
         }
-        
+
         calculatorDisplay.text = "\(result)"
         
+        //prevent saving if already returned results
+        if(firstNumber == 0 && secondNumber == 0){
+            return
+        }
+        
         //save results in history
-        historyList.append("\(String(describing: firstNumber)))\(operation)\(secondNumber)=\(result)")
-        print(historyList)
+        equation.append(firstNumber!.description)
+        equation.append(" " + operation + " ")
+        equation.append(String(secondNumber))
+        equation.append(" = ")
+        equation.append(String(result))
+
+        equationHistory.append(equation)
+        
+        saveToJsonFile()
+        
+        firstNumber = 0
+        secondNumber = 0
     }
     
+    func saveToJsonFile() {
+        // Get the url of equations.json in document directory
+        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let fileUrl = documentDirectoryUrl.appendingPathComponent("equations.json")
+        // Save it into file
+        do {
+            let data = try JSONSerialization.data(withJSONObject: equationHistory, options: [])
+            try data.write(to: fileUrl, options: [])
+        } catch {
+            print(error)
+        }
+    }
+    
+    func retrieveFromJsonFile() -> [String]{
+        // Get the url of equations.json in document directory
+        guard let documentsDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return [""]}
+        let fileUrl = documentsDirectoryUrl.appendingPathComponent("equations.json")
+        // Read data from equations.json file
+        do {
+            let data = try Data(contentsOf: fileUrl, options: [])
+            guard let equationHistory = try JSONSerialization.jsonObject(with: data, options: []) as? [String] else { return [""]}
+            return equationHistory
+        } catch {
+            print(error)
+        }
+        return [""]
+    }
+
     @objc func gestureText(symbol: String) {
         self.gestureAreaLabel.text = symbol
     }
@@ -350,10 +397,6 @@ class CalculateMenuController: UIViewController {
         presentingViewController?.dismiss(animated: true, completion: {
             () -> Void in
         })
-    }
-    
-    public func getHistoryResults() -> [String] {
-        return historyList
     }
     
     // Method to set up an external screen.
@@ -384,5 +427,4 @@ class CalculateMenuController: UIViewController {
             externalWindow = nil
         }
     }
-    
 }
